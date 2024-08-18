@@ -1,0 +1,18 @@
+
+[tool.poetry]
+name = "app"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <youremail@example.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.85.0"
+uvicorn = "^0.18.2"
+redis = "^4.3.4"
+aiokafka = "^0.8.0"
+pydantic = "^1.10.2"
+confluent-kafka = "^2.5.0"
+six = "^1.16.0"
+[tool.poetry.dev-dependencies]
+
