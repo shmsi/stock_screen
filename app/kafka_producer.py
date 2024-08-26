@@ -3,10 +3,8 @@ import json
 import time
 import random
 
-# Configuration for the Confluent Kafka producer
 conf = {"bootstrap.servers": "kafka:9092"}
 
-# Create a Producer instance
 producer = Producer(**conf)
 
 
@@ -20,7 +18,7 @@ def delivery_report(err, msg):
 
 
 while True:
-    stock_price = {"symbol": "AAPL", "price": round(random.uniform(150, 160), 2)}
+    stock_price = {"symbol": "AAPL", "price": round(random.uniform(150, 160), 2), "timestamp": int(time.time())}
     # Produce the message asynchronously
     print("stock_price:", stock_price)
     producer.produce(
@@ -30,12 +28,6 @@ while True:
         callback=delivery_report,
     )
 
-    # Wait up to 1 second for events. Callbacks will be invoked during
-    # this method call if the message is acknowledged by the broker.
     producer.poll(1)
-
     time.sleep(1)
 
-# Wait for any outstanding messages to be delivered and delivery report
-# callbacks to be triggered.
-# producer.flush()

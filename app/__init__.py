@@ -1,10 +1,11 @@
 import redis
 from fastapi import FastAPI
+from app.redis import add_data, create_timeseries, redis_client
 from confluent_kafka import Consumer, KafkaException, KafkaError
 import threading
 from .config import settings
 from .routes import router
-from .data_stream import redis_client
+
 
 app = FastAPI()
 
@@ -16,12 +17,14 @@ def consume_kafka():
         "auto.offset.reset": "earliest",
     }
     print("sleeping for 10 seconds")
-    import time 
+    import time
+
     time.sleep(10)
 
     consumer = Consumer(conf)
     consumer.subscribe([settings.kafka_topic])
 
+    create_timeseries(redis_client, retention_msecs=1000 * 60 * 60 * 24 * 7)
     try:
         while True:
             msg = consumer.poll(timeout=1.0)
@@ -34,8 +37,12 @@ def consume_kafka():
                 else:
                     raise KafkaException(msg.error())
             else:
-                # Message processing
-                redis_client.set("latest_stock_price", msg.value().decode("utf-8"))
+                # redis_client.set("latest_stock_price", msg.value().decode("utf-8"))
+                # redis_client.execute_command("TS.ADD", "stock_price", "*", msg.value().decode("utf-8"))
+                data = msg.value().decode("utf-8").split(",")
+                print (type(data))
+                print(data)
+                # add_data(redis_client, msg.value().decode("utf-8"))
                 print(f"Received message: {msg.value().decode('utf-8')}")
 
     finally:

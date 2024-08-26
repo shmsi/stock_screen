@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from .data_stream import redis_client
 
+from app.redis import redis_client
 router = APIRouter()
 
 
